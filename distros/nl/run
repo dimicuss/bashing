@@ -1,0 +1,3 @@
+#!/bin/bash
+
+sort -k 1,1 -k 2gb ../distros | sed -rf script.sed | nl -w 7

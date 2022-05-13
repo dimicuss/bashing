@@ -1,0 +1,62 @@
+#!/bin/bash
+
+TITLE="System information report $HOSTNAME"
+CURRENT_DATE=$(date +"%z %r %Z")
+TIME_STAMP="Generated $CURRENT_DATE, by $USER"
+
+report_uptime () {
+	cat <<- _EOF_
+		<h2>Uptime
+		</h2>
+		<pre>$(uptime)</pre>
+	_EOF_
+	return
+}
+
+report_disk_space () {
+	cat <<- _EOF_
+		<h2>Disk space</h2>
+		<pre>$(df -h)</pre>
+	_EOF_
+	return
+}
+
+report_home_space () {
+	local USER_ID="$(id -u)";
+	local header;
+	local result;
+
+	if ((USER_ID == 0)); then
+		header="All files";
+	else 
+		header="${USER}'s files";
+	fi
+		
+	if ((USER_ID == 0)); then
+		result=$(du -sh /home/*);
+	else
+		result=$(du -sh ~/*)
+	fi
+
+	cat <<- _EOF_
+		<h2>$header</h2>
+		<pre>$result</pre>		
+	_EOF_
+	return
+}
+
+cat << _EOF_
+<html>
+	<head>
+		<title>$TITLE</title>
+	</head>
+	<body>
+		<h1>$TITLE</h1>
+		<p>$TIME_STAMP</p>
+		$(report_uptime)
+		$(report_disk_space)
+		$(report_home_space)
+	</body>
+</html>
+_EOF_
+
