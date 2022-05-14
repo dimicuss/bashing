@@ -4,17 +4,17 @@ echo -en "\e[92mPlease enter integer here >> \e[0m"
 read
 
 if [[ $REPLY =~ ^-?[0-9]+$ ]]; then
-	if ((INT == 0)); then
+	if ((REPLY == 0)); then
 		echo "$REPLY is zero"
 		exit 0
 	fi
-	if ((INT < 0)); then
+	if ((REPLY < 0)); then
 		echo "$REPLY less then zero"
 	fi
-	if ((INT > 0)); then
+	if ((REPLY > 0)); then
 		echo "$REPLY more then zero"
 	fi
-	if (( ((INT % 2)) == 0 )); then
+	if (( ((REPLY % 2)) == 0 )); then
 		echo "$REPLY is even"
 	else
 		echo "$REPLY is odd"
