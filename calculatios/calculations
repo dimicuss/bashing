@@ -1,0 +1,23 @@
+#!/bin/bash
+
+INT=0
+
+if [[ $INT =~ ^-?[0-9]+$ ]]; then
+	if ((INT == 0)); then
+		echo "Value is zero"
+		return
+	fi
+	if ((INT < 0)); then
+		echo "Value less then zero"
+	fi
+	if ((INT > 0)); then
+		echo "Value more then zero"
+	fi
+	if (( ((INT % 2)) == 0 )); then
+		echo "Value is even"
+	else
+		echo "Value is odd"
+	fi
+else
+	echo "Current value is not a number or not exists"
+fi
