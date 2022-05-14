@@ -1,24 +1,24 @@
 #!/bin/bash
 
 echo -en "\e[92mPlease enter integer here >> \e[0m"
-read INT
+read
 
-if [[ $INT =~ ^-?[0-9]+$ ]]; then
+if [[ $REPLY =~ ^-?[0-9]+$ ]]; then
 	if ((INT == 0)); then
-		echo "Integer is zero"
+		echo "$REPLY is zero"
 		exit 0
 	fi
 	if ((INT < 0)); then
-		echo "Integer less then zero"
+		echo "$REPLY less then zero"
 	fi
 	if ((INT > 0)); then
-		echo "Integer more then zero"
+		echo "$REPLY more then zero"
 	fi
 	if (( ((INT % 2)) == 0 )); then
-		echo "Integer is even"
+		echo "$REPLY is even"
 	else
-		echo "Integer is odd"
+		echo "$REPLY is odd"
 	fi
 else
-	echo "Current Integer is not a integer or not exists"
+	echo "Current value is not a integer"
 fi

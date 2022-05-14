@@ -1,0 +1,34 @@
+#!/bin/bash
+
+invalid-input () {
+	echo -e "$REPLY is not valid" >&2
+	exit 1
+}
+
+echo -en "\e[32mPlease enter value \e[35m>> \e[0m"
+read
+
+[[ -z $REPLY ]] && invalid-input
+(( "$(echo $REPLY | wc -w)" > 1 )) && invalid-input
+
+if [[ $REPLY =~ ^[-[:alnum:]\.-]+$ ]]; then
+	echo "$REPLY is valid file name"
+	if [[ -e $REPLY ]]; then
+		echo "$REPLY file exits"
+	fi
+
+	if [[ $REPLY =~ ^-?[[:digit:]]*\.[[:digit:]]+$ ]]; then
+		echo "$REPLY is a floating point number"
+	else
+		echo "$REPLY is not a floating point number"
+	fi
+	
+	if [[ $REPLY =~ ^-?[[:digit:]]+$ ]]; then
+		echo "$REPLY is an integer"
+	else
+		echo "$REPLY is not integer"
+	fi
+else
+	echo "File name is invalid"	
+fi
+
