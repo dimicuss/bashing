@@ -1,31 +1,31 @@
 #!/bin/bash
 
-clear
-echo -e "\e[32mPlease select:
+DELAY=3
 
-1. Dispplay uptime
-2. Display disk usage
-3. Display disk usage for user
-0. Exit\e[0m"
-
-read R
-
-if [[ $R =~ ^[0-3]$ ]]; then
-	(( R == 0)) && exit 0
-	(( R == 1 )) && (echo "Uptime ($HOSTNAME)"; uptime; exit 0)
-	(( R == 2 )) && (echo "Disk usage ($USER)" && df -h && exit 0)
-	
-	if (( R == 3 )); then
-		if (( $(id -u) == 0 )); then
-			echo "Disk utilization (All users)" 
-			du -sh /home/*
-		else
-			echo "Disk utilization ($USER)" 
-			du -sh $HOME
+while true; do
+	clear
+	echo -ne "$(cat prompt_text)"
+	read R
+	if [[ $R =~ ^[0-3]$ ]]; then
+		(( R == 0 )) && break
+		(( R == 1 )) && (echo "Uptime ($HOSTNAME)"; uptime; sleep $DELAY; continue)
+		(( R == 2 )) && (echo "Disk usage ($USER)"; df -h; sleep $DELAY; continue)
+		
+		if (( R == 3 )); then
+			if (( $(id -u) == 0 )); then
+				echo "Disk utilization (All users)" 
+				du -sh /home/*
+			else
+				echo "Disk utilization ($USER)" 
+				du -sh $HOME
+			fi
+			sleep $DELAY
+			continue
 		fi
-		exit 0
+	else
+		echo "Selection is not valid" >&2
+		sleep $DELAY
 	fi
-else
-	echo "Selection is not valid" >&2
-	exit 1
-fi
+done
+
+echo "Bye!"
