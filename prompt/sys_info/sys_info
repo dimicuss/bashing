@@ -1,0 +1,42 @@
+#!/bin/bash
+
+DELAY=3
+
+while true; do
+	clear
+	echo -ne "$(cat text)"
+	read R
+	case $R in
+		q|Q)
+			echo "Bye"
+			break
+			;;
+		a|A)
+			echo "Uptime ($HOSTNAME)"
+			uptime;
+			sleep $DELAY;
+			continue
+			;;
+		b|B)
+			echo "Disk usage ($USER)";
+			df -h;
+			sleep $DELAY;
+			continue
+			;;
+		c|C)
+			if (( $(id -u) == 0 )); then
+				echo "Disk utilization (All users)" 
+				du -sh /home/*
+			else
+				echo "Disk utilization ($USER)" 
+				du -sh $HOME
+			fi
+			sleep $DELAY
+			continue
+			;;
+		*)
+			echo "Selection is not valid" >&2
+			sleep $DELAY
+			;;
+	esac					
+done

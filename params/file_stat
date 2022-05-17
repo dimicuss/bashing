@@ -1,0 +1,10 @@
+#!/bin/bash
+
+SCRIPTNAME=$(basename "$0")
+
+if [[ -e "$1" ]]; then
+	echo -e "File type: $(file $1)"
+	echo -e "File stat: $(stat -c "\n\tMounted: %m;\n\tSize in blocks: %b;\n\tName: %n;" $1)"
+else
+	echo "$SCRIPTNAME: usage: $SCRIPTNAME File can't be opened" >&2
+fi

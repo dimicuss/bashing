@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash 
 
 LOCALE=POSIX sort -k 1,1 -k 2,2g ../distros | while read name version date; do
 	printf "Name: %s;\t Version: %s;\t Date: %s\n"\

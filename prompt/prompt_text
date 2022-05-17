@@ -1,8 +1,0 @@
-\e[32mPlease select:
-
-1. Display uptime
-2. Display disk usage
-3. Display disk usage for use
-0. Exit
-
-Please enter selection here >> \e[0m

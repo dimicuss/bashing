@@ -1,0 +1,15 @@
+#!/bin/bash
+
+print_params () {
+	echo -e "\$1 = $1\n\$2 = $2\n\$3 = $3\n\$4 = $4\n"
+}
+
+
+set_params () {
+	echo -e '$* :'; print_params $*
+	echo -e '"$*" :'; print_params "$*"
+	echo -e '$@ :'; print_params $@
+	echo -e '"$@" :'; print_params "$@"
+}
+
+set_params hello world hello world

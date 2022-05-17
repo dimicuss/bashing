@@ -1,0 +1,124 @@
+#!/bin/bash
+
+interactive=
+filename=
+SCRIPTNAME=$(basename "$0")
+TITLE="System information report $HOSTNAME"
+CURRENT_DATE=$(date +"%z %r %Z")
+TIME_STAMP="Generated $CURRENT_DATE, by $USER"
+
+usage () {
+	echo "$SCRIPTNAME: usage: $SCRIPTNAME [-h | --help -f --file | -i --interactive]"
+}
+
+report_uptime () {
+	echo "<h2>Uptime</h2>"
+	echo "<pre>$(uptime)</pre>"
+}
+
+report_disk_space () {
+	echo "<h2>Disk space</h2>"
+	echo "<pre>$(df -h)</pre>"
+}
+
+report_home_space () {
+	local user_id=$(id -u)
+	local format='%8s%10s%10s\n'
+	local dir_list user_name total_files total_dirs total_size
+
+	if ((user_id == 0)); then
+		dir_list=/home/*
+		user_name="All users"
+	else
+		dir_list="$HOME"
+		user_name="$USER"
+	fi
+	
+	echo "  <h2>Home space utilization ($user_name)</h2>"
+	
+	for i in $dir_list; do
+		total_files="$(find "$i" -type d | wc -l)"
+		total_dirs="$(find "$i" -type f | wc -l)"
+		total_size="$(du -sh "$i" | cut -f 1)"
+		echo "<h3>$i</h3>"
+		echo "<pre>"
+		printf "$format" "Dirs" "Files" "Size"
+		printf "$format" "----" "-----" "----"
+		printf "$format" "$total_dirs" "$total_files" "$total_size"
+		echo "</pre>"
+	done
+}
+
+write_to_html () {
+	cat <<- _EOF_
+	<html>
+		<head>
+			<title>$TITLE</title>
+		</head>
+		<body>
+			<h1>$TITLE</h1>
+			<p>$TIME_STAMP</p>
+			$(report_uptime)
+			$(report_disk_space)
+			$(report_home_space)
+		</body>
+	</html>
+	_EOF_
+}
+
+while [[ -n "$1" ]]; do
+	case $1 in
+		-f | --file)
+			shift
+			filename="$1"
+			;;
+		-i | --interactive)
+			interactive=1
+			;;
+		-h)
+			usage
+			exit
+			;;
+		*)
+			usage >&2
+			exit
+			;;
+	esac
+	shift
+done
+
+if [[ -n "$interactive" ]]; then
+	while true; do
+		read -p "Enter filename for output > " filename
+		if [[ -e "$filename" ]]; then
+			read -p "File exists. Overwrite? (y|n|q) > "
+			case $REPLY in
+				y|Y)
+					break
+					;;
+				q|Q)
+					echo "Program terminated"
+					exit
+					;;
+				*)
+					continue
+					;;
+			esac
+		elif [[ -z "$filename" ]]; then
+			continue
+		else
+			break
+		fi
+	done
+fi
+
+if [[ -n "$filename" ]]; then
+	if touch "$filename" && [[ -f "$filename" ]]; then
+		write_to_html > "$filename"
+	else
+		echo "$SCRIPTNAME: Cannot wite to file $filename" >&2
+		exit 1
+	fi
+else
+	write_to_html
+fi
