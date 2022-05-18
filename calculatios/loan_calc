@@ -1,0 +1,89 @@
+#!/bin/bash
+
+PROGNAME="${0##*/}"
+interactive=0
+print_help=0
+principal=
+interest=
+months=
+
+usage () {
+	cat <<- EOF
+
+	Usage: $PROGNAME [PRINCIPAL INTEREST MONTH -i --interactive]
+	
+	Where:
+	
+	PRINCIPAL is amount of the loan (Float).
+	INTEREST is the APR as a number (Float).
+	MONTH is the length of the loan's term (Integer).
+	
+	EOF
+}
+
+is_float () {
+	[[ "$1" =~ ^[0-9]*\.[0-9]+$ ]]
+}
+
+is_integer () {
+	[[ "$1" =~ ^[0-9]+$ ]]
+}
+
+read_value () {
+	local value
+	read -p "Please enter $1 or (q|Q to quit) > " value
+
+	if [[ "$value" =~ ^(q|Q)$ ]]; then
+		echo "Bye!"
+		exit
+	fi
+
+	if $("$2" "$value"); then
+		echo "$value"
+	else 
+		usage >&2
+		read_value $*
+	fi
+}
+
+	
+for i in $*; do
+	case "$i" in
+		-i | --interactive)
+			interactive=1
+			;;
+		-h | --help)
+			print_help=1
+			;;
+	esac
+done
+
+if ((print_help)); then
+	usage
+	exit
+elif ((interactive)); then
+	principal="$(read_value PRINCIPAL is_float)"
+	interest="$(read_value INTEREST is_float)"
+	months="$(read_value MONTHS is_integer)"
+elif (($# == 3)) && is_float "$1" && is_float "$2" && is_integer "$3"; then
+	principal="$1"
+	interest="$2"
+	months="$3"
+else
+	usage >&2
+	exit 1
+fi
+
+BC_OUT=$(
+	bc <<- EOF
+		scale = 10
+		i = $interest / 12
+		p = $principal
+		n = $months
+
+		result = p * ((i * ((1 + i) ^ n)) / (((1 + i) ^ n) - 1))
+		result
+	EOF
+)
+
+LC_NUMERIC="en_US.UTF-8" printf "Result: %.5f\n" "$BC_OUT"
