@@ -67,8 +67,7 @@ calculate_loan () {
 		result
 		EOF
 	)	
-
-	LC_NUMERIC="en_US.UTF-8" printf "Result: %.5f\n" "$BC_OUT"
+	LC_NUMERIC="C.UTF-8" printf "Result: %.5f\n" "$BC_OUT"
 }
 
 if check_inclusion "$*" "-h --help"; then

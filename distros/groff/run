@@ -1,3 +1,3 @@
 #!/bin/bash
 
-LANG=POSIX sort -k 1,1 -k 2,2g ../distros | sed -rf script.sed | groff -t -T ascii
+LC_NUMERIC='C.UTF-8' sort -k 1,1 -k 2,2g ../distros | sed -rf script.sed | groff -t -T ascii
