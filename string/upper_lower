@@ -6,6 +6,8 @@ declare -l lower_value="${REPLY:-"Default Value"}"
 declare -u upper_value="${REPLY:-"Default Value"}"
 
 cat <<- EOF
-Upper is $upper_value
-Lower is $lower_value
+
+Upper: $upper_value or ${REPLY^^} or ${REPLY^}
+Lower: $lower_value or ${REPLY,,} or ${REPLY,}
+
 EOF
