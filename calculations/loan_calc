@@ -72,6 +72,7 @@ calculate_loan () {
 
 if check_inclusion "$*" "-h --help"; then
 	usage
+	echo usage
 	exit
 elif check_inclusion "$*" "-i --interactive"; then
 	if
@@ -84,7 +85,12 @@ elif check_inclusion "$*" "-i --interactive"; then
 		echo Bye!
 		exit
 	fi
-elif (($# == 3)) && is_float_or_integer "$1" && is_float_or_integer "$2" && is_integer "$3"; then
+elif
+	(($# == 3)) &&
+	is_float_or_integer "$1" &&
+	is_float_or_integer "$2" &&
+	is_integer "$3";
+then
 	calculate_loan "$1" "$2" "$3"
 else
 	usage >&2
