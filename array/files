@@ -1,0 +1,35 @@
+#!/bin/bash
+
+if [[ ! -d "$1" ]]; then
+	echo "Usage: ${0##*/} DIR_NAME" >&2
+	exit 1
+fi
+
+declare -A files file_owner file_group owners groups
+
+for i in "$1"/*; do
+	owner="$(stat -c %U "$i")"
+	group="$(stat -c %G "$i")"
+	files["$i"]="$i"
+	file_group["$i"]=$group
+	file_owner["$i"]=$owner
+	(( ++owners[$owner] ))
+	(( ++groups[$group] ))
+done
+
+for i in "${files[@]}"; do
+	printf "%-40s %-10s %-10s\n" "$i" "${file_owner[$i]}" "${file_group[$i]}"
+done
+echo
+
+echo "Owners:"
+{ for i in "${!owners[@]}"; do
+	printf "%-40s: %-10s file(s)\n" "$i" "${owners[$i]}"
+done } | sort
+echo
+
+echo "Groups:"
+{ for i in "${!groups[@]}"; do
+	printf "%-40s: %-10s file(s)" "$i" "${groups[$i]}"
+done } | sort
+echo
