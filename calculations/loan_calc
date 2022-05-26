@@ -3,7 +3,7 @@
 usage () {
 	cat <<- EOF
 
-	Usage: ${0##*/} [PRINCIPAL INTEREST MONTH -i --interactive -h --help]
+	Usage: ${0##*/} [-h --help] [PRINCIPAL INTEREST MONTH | -i --interactive]
 	
 	Where:
 	
@@ -35,7 +35,7 @@ read_value () {
 	fi
 
 	if $("$2" "$value"); then
-		eval "$3=$value"
+		echo "$value"
 		return 0
 	else 
 		usage >&2
@@ -62,22 +62,22 @@ calculate_loan () {
 		scale = 10
 		i = $2 / 12
 		p = $1
-		n = $3
-		result = p * ((i * ((1 + i) ^ n)) / (((1 + i) ^ n) - 1))
+		m = $3
+		result = p * ((i * ((1 + i) ^ m)) / (((1 + i) ^ m) - 1))
 		result
 		EOF
 	)	
-	LC_NUMERIC="C.UTF-8" printf "\nResult: %.5f\n" "$BC_OUT"
+	LC_NUMERIC="C.UTF-8" printf "\nResult: %.5f per month\n" "$BC_OUT"
 }
 
-if check_inclusion "$*" "-h --help"; then
+if check_inclusion "$@" "-h --help"; then
 	usage
 	exit
-elif check_inclusion "$*" "-i --interactive"; then
+elif check_inclusion "$@" "-i --interactive"; then
 	if
-		read_value PRINCIPAL is_float_or_integer p &&
-		read_value INTEREST is_float_or_integer i &&
-		read_value MONTHS is_integer m;
+		p=$(read_value PRINCIPAL is_float_or_integer) &&
+		i=$(read_value INTEREST is_float_or_integer) &&
+		m=$(read_value MONTHS is_integer);
 	then
 		calculate_loan "$p" "$i" "$m"
 		exit
