@@ -1,0 +1,19 @@
+#!/bin/bash
+
+if [[ ! -d "$1" ]]; then
+	echo "Usage ${0##*/} DIR_NAME"
+fi
+
+while read attr links owner group size month date time filename; do
+	cat <<- EOF
+
+		Size:		$size
+		Links:		$links
+		Owner:		$owner
+		Group:		$group
+		Created:	$month $date $time
+		Filename:	$filename
+		Attributes:	$attr
+EOF
+done < <(ls -lh "$1" | tail -n +2)
+

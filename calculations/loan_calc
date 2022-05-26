@@ -57,7 +57,7 @@ check_inclusion () {
 }
 
 calculate_loan () {
-	BC_OUT=$(
+	local BC_OUT=$(
 		bc <<- EOF
 		scale = 10
 		i = $2 / 12
@@ -67,7 +67,7 @@ calculate_loan () {
 		result
 		EOF
 	)	
-	LC_NUMERIC="C.UTF-8" printf "Result: %.5f\n" "$BC_OUT"
+	LC_NUMERIC="C.UTF-8" printf "\nResult: %.5f\n" "$BC_OUT"
 }
 
 if check_inclusion "$*" "-h --help"; then
@@ -79,7 +79,7 @@ elif check_inclusion "$*" "-i --interactive"; then
 		read_value INTEREST is_float_or_integer i &&
 		read_value MONTHS is_integer m;
 	then
-		calculate_loan $p $i $m
+		calculate_loan "$p" "$i" "$m"
 		exit
 	else
 		echo Bye!
