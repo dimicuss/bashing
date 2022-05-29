@@ -1,1 +1,67 @@
 #!/bin/bash
+
+pids=()
+FIFO_DIR="./tmp"
+FIFO_NAME="pipe"
+FIFO_PATH="$FIFO_DIR/$FIFO_NAME"
+
+dispose () {
+	rm -rf $FIFO_DIR
+}
+
+terminate () {
+	echo -e "\nBye!"
+	dispose
+	exit
+}
+
+replace () {
+	regex="^(.*)$2(.*)$"
+	if [[ "$1" =~ $regex ]]; then
+		echo "${BASH_REMATCH[1]}$3${BASH_REMATCH[2]}"
+	else
+		echo "$1"
+	fi
+}
+
+get_fifo () {
+	if [[ -p $FIFO_PATH ]]; then
+		echo $FIFO_PATH
+	else
+		mkdir -p $FIFO_DIR
+		mkfifo $FIFO_PATH
+		echo $FIFO_PATH
+	fi
+}
+
+send_message_to_fifo () {
+	echo "$1" > $(get_fifo) &
+	pids+=($!)
+}
+
+wait_for_fifo_end () {
+	echo "Waiting for fifo end..."
+	wait "${pids[@]}"
+	echo "Fifo successfully ended."
+}
+
+read_loop () {
+	local message
+	echo -n "Please enter non zero text or q|Q to wait fifo end >> "
+	read message
+	
+	if [[ "$message" =~ ^(q|Q)$ ]]; then
+		return 0
+	elif [[ -n "$message" ]]; then
+		eval "$(replace "$*" "%MESSAGE%" "$message")"
+		read_loop "$@"
+	else
+		echo "Please enter valid value."
+		read_loop "$@"
+	fi
+}
+
+trap terminate SIGINT SIGTERM
+
+read_loop send_message_to_fifo %MESSAGE% && wait_for_fifo_end
+dispose
