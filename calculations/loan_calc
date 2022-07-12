@@ -72,7 +72,6 @@ calculate_loan () {
 
 if check_inclusion "$@" "-h --help"; then
 	usage
-	exit
 elif check_inclusion "$@" "-i --interactive"; then
 	if
 		p=$(read_value PRINCIPAL is_float_or_integer) &&
@@ -80,10 +79,8 @@ elif check_inclusion "$@" "-i --interactive"; then
 		m=$(read_value MONTHS is_integer);
 	then
 		calculate_loan "$p" "$i" "$m"
-		exit
 	else
 		echo Bye!
-		exit
 	fi
 elif
 	(($# == 3)) &&
@@ -92,7 +89,6 @@ elif
 	is_integer "$3";
 then
 	calculate_loan "$1" "$2" "$3"
-	exit
 else
 	usage >&2
 	exit 1
